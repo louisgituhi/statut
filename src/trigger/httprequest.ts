@@ -1,14 +1,12 @@
-import { task, schedules } from "@trigger.dev/sdk";
-import { checksTable } from "../../database/schema.ts";
-import { db } from "../../database/db.ts";
+import { schedules } from "@trigger.dev/sdk";
 import { uuidv7 } from "uuidv7";
+import { db } from "../../database/db.ts";
+import { checksTable } from "../../database/schema.ts";
 
 const url = "https://planck.louisgituhi.workers.dev/";
 const monitorId = "0198d351-1f99-7c7f-b460-ac12ef8957bc";
 
-
 type InsertChecks = typeof checksTable.$inferInsert;
-
 
 const performHTTPRequest = schedules.task({
 	id: "https-check-running every 20 minutes",
@@ -18,7 +16,7 @@ const performHTTPRequest = schedules.task({
 		const ttfbStart = performance.now();
 		const response = await fetch(url, {
 			method: "GET",
-		})
+		});
 		const endTime = performance.now();
 
 		const ttfb = Math.round(endTime - ttfbStart);
@@ -29,6 +27,7 @@ const performHTTPRequest = schedules.task({
 
 		const serverName = response.headers.get("server") || "unknown";
 		const contentType = response.headers.get("content-type") || "null";
+		const contentLength = (await response.arrayBuffer()).byteLength.toString();
 		const lastPinged = new Date();
 
 		const checksTableData: InsertChecks = {
@@ -39,9 +38,8 @@ const performHTTPRequest = schedules.task({
 			response_time_ms: Number(responseTime),
 			ttfb,
 			content_type: contentType,
-			content_length: "6",
+			content_length: contentLength,
 			server_name: serverName,
-			server_ip: "198.103.8.001",
 			success: true,
 			error: false,
 			error_message: null,
@@ -56,19 +54,17 @@ const performHTTPRequest = schedules.task({
 			response_time_ms: Number(responseTime),
 			ttfb,
 			content_type: contentType,
-			content_length: "0",
+			content_length: contentLength,
 			server_name: serverName,
-			server_ip: "198.103.8.001",
 			success: false,
 			error: true,
 			error_message: "Not-found",
 			last_pinged: lastPinged,
-		}
+		};
 		try {
 			await db.insert(checksTable).values(checksTableData);
-
 		} catch (error) {
 			await db.insert(checksTable).values(checkTableErrors);
 		}
-	}
-})
+	},
+});
