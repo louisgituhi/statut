@@ -1,30 +1,42 @@
 import { DuckDBInstance } from "@duckdb/node-api";
 
-const dbUrl = Bun.env.DATABASE_URL;
-if (!dbUrl) throw new Error("DATABASE_URL is not set");
-
-const instance = await DuckDBInstance.create("./statut.duckdb");
+const instance = await DuckDBInstance.create('./statut.duckdb');
 const connection = await instance.connect();
 
-await connection.run("INSTALL postgres_scanner");
-await connection.run("LOAD postgres_scanner");
 await connection.run(`
-	CALL postgres_attach (
-		'${dbUrl}'
-	)
+	INSTALL postgres_scanner;
+`)
+	.then(() => console.log('postgres scanner installed successfully'))
+	.catch((e) => console.log('Error installing', e));
+
+await connection.run(`
+ 	LOAD postgres_scanner;
+`)
+	.then(() => console.log('Attached successfully'))
+	.catch((e) => console.log('Error loading', e));
+
+
+// copy all data from  neon to local
+
+await connection.run(`
+ 	CREATE TABLE local_monitors_table AS
+ 	SELECT * FROM statut.monitors_table
+`)
+	.then(() => console.log('monitors data copied locally'))
+	.catch((e) => console.log('Error creating table', e));
+
+await connection.run(`
+ 	CREATE TABLE local_checks_table AS
+	SELECT  * FROM statut.checks_table
+`)
+	.then(() => console.log('checks table data copied locally'))
+	.catch((e) => console.log('Error creating table', e));
+
+
+const result = await connection.runAndReadAll(`
+	PRAGMA show_tables
 `);
 
-const reader = await connection.runAndReadAll('from monitors_table');
-const rows = reader.getRows();
-
-for (const row of rows) {
-	console.log(row);
-}
-
-const columns = reader.getColumns();
-
-for (const column of columns) {
-	console.log(column)
-}
+console.table(result.getRows());
 
 connection.closeSync();
