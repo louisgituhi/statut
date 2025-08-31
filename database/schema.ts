@@ -1,6 +1,5 @@
 import {
 	boolean,
-	inet,
 	integer,
 	pgTable,
 	text,

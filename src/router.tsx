@@ -5,13 +5,13 @@ export function createRouter() {
 	const router = createTanstackRouter({
 		routeTree,
 		scrollRestoration: true,
-	})
+	});
 
-	return router
+	return router;
 }
 
 declare module "@tanstack/react-router" {
 	interface Register {
-		router: ReturnType<typeof createRouter>
+		router: ReturnType<typeof createRouter>;
 	}
 }

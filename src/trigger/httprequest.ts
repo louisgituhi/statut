@@ -8,7 +8,7 @@ const monitorId = "0198d351-1f99-7c7f-b460-ac12ef8957bc";
 
 type InsertChecks = typeof checksTable.$inferInsert;
 
-const performHTTPRequest = schedules.task({
+const _performHTTPRequest = schedules.task({
 	id: "https-check-running every 20 minutes",
 	cron: "*/20 * * * *",
 	run: async () => {
@@ -63,7 +63,7 @@ const performHTTPRequest = schedules.task({
 		};
 		try {
 			await db.insert(checksTable).values(checksTableData);
-		} catch (error) {
+		} catch (_error) {
 			await db.insert(checksTable).values(checkTableErrors);
 		}
 	},
