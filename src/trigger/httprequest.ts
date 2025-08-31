@@ -18,7 +18,7 @@ const _performHTTPRequest = schedules.task({
 		let statusText = "";
 		let serverName = "unknown";
 		let contentType = "null";
-		let contentLength: string | null = null;
+		let contentLength = "0";
 		let success = false;
 		let error = false;
 		let errorMessage: string | null = null;
@@ -33,21 +33,32 @@ const _performHTTPRequest = schedules.task({
 			serverName = response.headers.get("server") || "unknown";
 			contentType = response.headers.get("content-type") || "null";
 
-			const _ttfbMark = performance.now();
 			const reader = response.body?.getReader();
-			if (reader) {
-				await reader.read();
-			}
-			const firstByteTime = performance.now();
-			ttfb = Math.round(firstByteTime - startTime);
+			let totalBytes = 0;
+			let firstByteTime: number | null = null;
 
-			const arrayBuffer = await response.arrayBuffer();
+			if (reader) {
+				// Read first chunk -> TTFB
+				const firstChunk = await reader.read();
+				if (!firstChunk.done) {
+					totalBytes += firstChunk.value.byteLength;
+					firstByteTime = performance.now();
+					ttfb = Math.round(firstByteTime - startTime);
+				}
+
+				// Read rest of the body -> total size & full response time
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+					if (value) {
+						totalBytes += value.byteLength;
+					}
+				}
+			}
+
 			const endTime = performance.now();
 			responseTime = Math.round(endTime - startTime);
-
-			contentLength =
-				response.headers.get("content-length") ??
-				arrayBuffer.byteLength.toString();
+			contentLength = totalBytes.toString();
 
 			success = true;
 		} catch (err: any) {
@@ -65,7 +76,7 @@ const _performHTTPRequest = schedules.task({
 			response_time_ms: responseTime,
 			ttfb,
 			content_type: contentType,
-			content_length: contentLength ?? "0",
+			content_length: contentLength,
 			server_name: serverName,
 			success,
 			error,
@@ -73,7 +84,11 @@ const _performHTTPRequest = schedules.task({
 			last_pinged: lastPinged,
 		};
 
-		await db.insert(checksTable).values(checksTableData);
+		try {
+			await db.insert(checksTable).values(checksTableData);
+			console.log("Inserted row:", checksTableData);
+		} catch (dbError) {
+			console.error("DB insert failed:", dbError);
+		}
 	},
 });
-
