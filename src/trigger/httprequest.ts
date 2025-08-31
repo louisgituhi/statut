@@ -13,58 +13,67 @@ const _performHTTPRequest = schedules.task({
 	cron: "*/20 * * * *",
 	run: async () => {
 		const startTime = performance.now();
-		const ttfbStart = performance.now();
-		const response = await fetch(url, {
-			method: "GET",
-		});
-		const endTime = performance.now();
 
-		const ttfb = Math.round(endTime - ttfbStart);
-		const responseTime = Math.round(endTime - startTime);
+		let statusCode: number | null = null;
+		let statusText = "";
+		let serverName = "unknown";
+		let contentType = "null";
+		let contentLength: string | null = null;
+		let success = false;
+		let error = false;
+		let errorMessage: string | null = null;
+		let ttfb = 0;
+		let responseTime = 0;
 
-		const statusCode = response.status;
-		const statusText = response.statusText;
+		try {
+			const response = await fetch(url, { method: "GET" });
 
-		const serverName = response.headers.get("server") || "unknown";
-		const contentType = response.headers.get("content-type") || "null";
-		const contentLength = (await response.arrayBuffer()).byteLength.toString();
+			statusCode = response.status;
+			statusText = response.statusText;
+			serverName = response.headers.get("server") || "unknown";
+			contentType = response.headers.get("content-type") || "null";
+
+			const _ttfbMark = performance.now();
+			const reader = response.body?.getReader();
+			if (reader) {
+				await reader.read();
+			}
+			const firstByteTime = performance.now();
+			ttfb = Math.round(firstByteTime - startTime);
+
+			const arrayBuffer = await response.arrayBuffer();
+			const endTime = performance.now();
+			responseTime = Math.round(endTime - startTime);
+
+			contentLength =
+				response.headers.get("content-length") ??
+				arrayBuffer.byteLength.toString();
+
+			success = true;
+		} catch (err: any) {
+			error = true;
+			errorMessage = err?.message ?? "Unknown error";
+		}
+
 		const lastPinged = new Date();
 
 		const checksTableData: InsertChecks = {
 			id: uuidv7(),
 			monitor_id: monitorId,
-			status_code: statusCode.toString(),
+			status_code: statusCode?.toString() ?? "0",
 			status_text: statusText,
-			response_time_ms: Number(responseTime),
+			response_time_ms: responseTime,
 			ttfb,
 			content_type: contentType,
-			content_length: contentLength,
+			content_length: contentLength ?? "0",
 			server_name: serverName,
-			success: true,
-			error: false,
-			error_message: null,
+			success,
+			error,
+			error_message: errorMessage,
 			last_pinged: lastPinged,
 		};
 
-		const checkTableErrors: InsertChecks = {
-			id: uuidv7(),
-			monitor_id: monitorId,
-			status_code: statusCode.toString(),
-			status_text: statusText,
-			response_time_ms: Number(responseTime),
-			ttfb,
-			content_type: contentType,
-			content_length: contentLength,
-			server_name: serverName,
-			success: false,
-			error: true,
-			error_message: "Not-found",
-			last_pinged: lastPinged,
-		};
-		try {
-			await db.insert(checksTable).values(checksTableData);
-		} catch (_error) {
-			await db.insert(checksTable).values(checkTableErrors);
-		}
+		await db.insert(checksTable).values(checksTableData);
 	},
 });
+
