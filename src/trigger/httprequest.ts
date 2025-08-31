@@ -38,7 +38,6 @@ const _performHTTPRequest = schedules.task({
 			let firstByteTime: number | null = null;
 
 			if (reader) {
-				// Read first chunk -> TTFB
 				const firstChunk = await reader.read();
 				if (!firstChunk.done) {
 					totalBytes += firstChunk.value.byteLength;
@@ -46,7 +45,6 @@ const _performHTTPRequest = schedules.task({
 					ttfb = Math.round(firstByteTime - startTime);
 				}
 
-				// Read rest of the body -> total size & full response time
 				while (true) {
 					const { done, value } = await reader.read();
 					if (done) break;
@@ -86,7 +84,6 @@ const _performHTTPRequest = schedules.task({
 
 		try {
 			await db.insert(checksTable).values(checksTableData);
-			console.log("Inserted row:", checksTableData);
 		} catch (dbError) {
 			console.error("DB insert failed:", dbError);
 		}
