@@ -8,52 +8,93 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardNestedLayoutRouteImport } from './routes/dashboard/nested-layout'
+import { Route as DashboardMonitorOverviewRouteImport } from './routes/dashboard/monitor-overview'
 
 const IndexRoute = IndexRouteImport.update({
-	id: "/",
-	path: "/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardNestedLayoutRoute = DashboardNestedLayoutRouteImport.update({
+  id: '/dashboard/nested-layout',
+  path: '/dashboard/nested-layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardMonitorOverviewRoute =
+  DashboardMonitorOverviewRouteImport.update({
+    id: '/dashboard/monitor-overview',
+    path: '/dashboard/monitor-overview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-	"/": typeof IndexRoute;
+  '/': typeof IndexRoute
+  '/dashboard/monitor-overview': typeof DashboardMonitorOverviewRoute
+  '/dashboard/nested-layout': typeof DashboardNestedLayoutRoute
 }
 export interface FileRoutesByTo {
-	"/": typeof IndexRoute;
+  '/': typeof IndexRoute
+  '/dashboard/monitor-overview': typeof DashboardMonitorOverviewRoute
+  '/dashboard/nested-layout': typeof DashboardNestedLayoutRoute
 }
 export interface FileRoutesById {
-	__root__: typeof rootRouteImport;
-	"/": typeof IndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/dashboard/monitor-overview': typeof DashboardMonitorOverviewRoute
+  '/dashboard/nested-layout': typeof DashboardNestedLayoutRoute
 }
 export interface FileRouteTypes {
-	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths: "/";
-	fileRoutesByTo: FileRoutesByTo;
-	to: "/";
-	id: "__root__" | "/";
-	fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/dashboard/monitor-overview' | '/dashboard/nested-layout'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/dashboard/monitor-overview' | '/dashboard/nested-layout'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard/monitor-overview'
+    | '/dashboard/nested-layout'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-	IndexRoute: typeof IndexRoute;
+  IndexRoute: typeof IndexRoute
+  DashboardMonitorOverviewRoute: typeof DashboardMonitorOverviewRoute
+  DashboardNestedLayoutRoute: typeof DashboardNestedLayoutRoute
 }
 
-declare module "@tanstack/react-router" {
-	interface FileRoutesByPath {
-		"/": {
-			id: "/";
-			path: "/";
-			fullPath: "/";
-			preLoaderRoute: typeof IndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-	}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/nested-layout': {
+      id: '/dashboard/nested-layout'
+      path: '/dashboard/nested-layout'
+      fullPath: '/dashboard/nested-layout'
+      preLoaderRoute: typeof DashboardNestedLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/monitor-overview': {
+      id: '/dashboard/monitor-overview'
+      path: '/dashboard/monitor-overview'
+      fullPath: '/dashboard/monitor-overview'
+      preLoaderRoute: typeof DashboardMonitorOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-	IndexRoute: IndexRoute,
-};
+  IndexRoute: IndexRoute,
+  DashboardMonitorOverviewRoute: DashboardMonitorOverviewRoute,
+  DashboardNestedLayoutRoute: DashboardNestedLayoutRoute,
+}
 export const routeTree = rootRouteImport
-	._addFileChildren(rootRouteChildren)
-	._addFileTypes<FileRouteTypes>();
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()

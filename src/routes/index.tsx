@@ -1,9 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
 	component: Home,
 });
 
 function Home() {
-	return <div>This is homepage</div>;
+	return (
+		<div className="p-2">
+			<h3>Welcome Home!!!</h3>
+			<Link to="/dashboard/nested-layout">Dashboard</Link>
+		</div>
+	);
 }
