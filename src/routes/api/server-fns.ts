@@ -35,6 +35,19 @@ export const getInctiveMonitor = createServerFn().handler(async () => {
 	}
 });
 
+export const getStatusPages = createServerFn().handler(async () => {
+	try {
+		const statusPages = await db
+			.select()
+			.from(schema.monitorsTable)
+			.where(eq(schema.monitorsTable.monitor_type, "Status page"));
+
+		return statusPages;
+	} catch (e) {
+		console.log("Error fetching status pages", e);
+	}
+});
+
 export const getSlowestEndpoint = createServerFn().handler(async () => {
 	try {
 		const [slowest] = await db
