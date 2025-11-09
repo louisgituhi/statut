@@ -6,7 +6,6 @@ import {
 	Notification02Icon,
 	Layers02Icon,
 	CircleIcon,
-	PlusSignSquareIcon,
 } from "@hugeicons/core-free-icons";
 import { VersionSwitcher } from "~/components/version-switcher";
 import {
@@ -41,12 +40,12 @@ const data = {
 			items: [
 				{
 					title: "Overview",
-					url: "#",
+					url: "/dashboard/overview",
 					icon: OverviewIcon,
 				},
 				{
 					title: "Monitors",
-					url: "#",
+					url: "/dashboard/monitors",
 					icon: MonitorIcon,
 				},
 				{

@@ -9,63 +9,78 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardNestedLayoutRouteImport } from './routes/dashboard/nested-layout'
-import { Route as DashboardMonitorOverviewRouteImport } from './routes/dashboard/monitor-overview'
+import { Route as DashboardOverviewRouteImport } from './routes/dashboard/overview'
+import { Route as DashboardMonitorsRouteImport } from './routes/dashboard/monitors'
 
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardNestedLayoutRoute = DashboardNestedLayoutRouteImport.update({
-  id: '/dashboard/nested-layout',
-  path: '/dashboard/nested-layout',
-  getParentRoute: () => rootRouteImport,
+const DashboardOverviewRoute = DashboardOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardMonitorOverviewRoute =
-  DashboardMonitorOverviewRouteImport.update({
-    id: '/dashboard/monitor-overview',
-    path: '/dashboard/monitor-overview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const DashboardMonitorsRoute = DashboardMonitorsRouteImport.update({
+  id: '/monitors',
+  path: '/monitors',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard/monitor-overview': typeof DashboardMonitorOverviewRoute
-  '/dashboard/nested-layout': typeof DashboardNestedLayoutRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/monitors': typeof DashboardMonitorsRoute
+  '/dashboard/overview': typeof DashboardOverviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard/monitor-overview': typeof DashboardMonitorOverviewRoute
-  '/dashboard/nested-layout': typeof DashboardNestedLayoutRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/monitors': typeof DashboardMonitorsRoute
+  '/dashboard/overview': typeof DashboardOverviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard/monitor-overview': typeof DashboardMonitorOverviewRoute
-  '/dashboard/nested-layout': typeof DashboardNestedLayoutRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/monitors': typeof DashboardMonitorsRoute
+  '/dashboard/overview': typeof DashboardOverviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard/monitor-overview' | '/dashboard/nested-layout'
+  fullPaths: '/' | '/dashboard' | '/dashboard/monitors' | '/dashboard/overview'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard/monitor-overview' | '/dashboard/nested-layout'
+  to: '/' | '/dashboard' | '/dashboard/monitors' | '/dashboard/overview'
   id:
     | '__root__'
     | '/'
-    | '/dashboard/monitor-overview'
-    | '/dashboard/nested-layout'
+    | '/dashboard'
+    | '/dashboard/monitors'
+    | '/dashboard/overview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardMonitorOverviewRoute: typeof DashboardMonitorOverviewRoute
-  DashboardNestedLayoutRoute: typeof DashboardNestedLayoutRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -73,27 +88,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/nested-layout': {
-      id: '/dashboard/nested-layout'
-      path: '/dashboard/nested-layout'
-      fullPath: '/dashboard/nested-layout'
-      preLoaderRoute: typeof DashboardNestedLayoutRouteImport
-      parentRoute: typeof rootRouteImport
+    '/dashboard/overview': {
+      id: '/dashboard/overview'
+      path: '/overview'
+      fullPath: '/dashboard/overview'
+      preLoaderRoute: typeof DashboardOverviewRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/monitor-overview': {
-      id: '/dashboard/monitor-overview'
-      path: '/dashboard/monitor-overview'
-      fullPath: '/dashboard/monitor-overview'
-      preLoaderRoute: typeof DashboardMonitorOverviewRouteImport
-      parentRoute: typeof rootRouteImport
+    '/dashboard/monitors': {
+      id: '/dashboard/monitors'
+      path: '/monitors'
+      fullPath: '/dashboard/monitors'
+      preLoaderRoute: typeof DashboardMonitorsRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
   }
 }
 
+interface DashboardRouteRouteChildren {
+  DashboardMonitorsRoute: typeof DashboardMonitorsRoute
+  DashboardOverviewRoute: typeof DashboardOverviewRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardMonitorsRoute: DashboardMonitorsRoute,
+  DashboardOverviewRoute: DashboardOverviewRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardMonitorOverviewRoute: DashboardMonitorOverviewRoute,
-  DashboardNestedLayoutRoute: DashboardNestedLayoutRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

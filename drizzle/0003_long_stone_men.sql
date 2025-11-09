@@ -1,1 +1,0 @@
-ALTER TABLE "checks_table" DROP COLUMN "server_ip";

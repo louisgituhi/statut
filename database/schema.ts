@@ -13,10 +13,12 @@ export const monitorsTable = pgTable("monitors_table", {
 	id: uuid()
 		.primaryKey()
 		.$defaultFn(() => uuidv7()),
-	monitor_name: text().notNull(),
+	monitor_name: text().unique().notNull(),
 	monitor_url: varchar().notNull(),
 	interval: integer().notNull(),
 	isActive: boolean().default(true).notNull(),
+	request_method: text(),
+	monitor_type: text(),
 	created_at: timestamp().defaultNow().notNull(),
 	updated_at: timestamp().defaultNow().notNull(),
 });

@@ -5,10 +5,10 @@ import { checksTable } from "../../database/schema.ts";
 
 // for (const monitor of monitors) {
 //const url = monitor.monitor_url;
-const url = "https://planck.louisgituhi.workers.dev";
-const monitorId = "0198d351-1f99-7c7f-b460-ac12ef8957bc"; //monitor.id;
-const name = "planck monitor"; //monitor.monitor_name;
-const interval = 60; //monitor.interval;
+const url = "https://planck.louisgituhi.workers.dev/";
+const monitorId = "019a65b1-08ec-7f92-be8f-85e2f22a15dc";
+const name = "Planck monitor";
+const interval = 30;
 
 type InsertChecks = typeof checksTable.$inferInsert;
 
