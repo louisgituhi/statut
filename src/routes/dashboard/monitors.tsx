@@ -18,6 +18,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { getMonitorChecks } from "../api/server-fns";
 import type { CheckWithMonitor } from "~/lib/definations";
+import SlowestEndpointCard from "~/components/slowest-endpoint";
+import InactiveMonitorsCard from "~/components/inactive-monitor";
 export const Route = createFileRoute("/dashboard/monitors")({
 	loader: () => getMonitorChecks(),
 	component: RouteComponent,
@@ -48,7 +50,7 @@ function RouteComponent() {
 						<CardTitle className="text-sm font-medium">Normal</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-semibold font-inter">3</div>
+						<div className="text-lg font-semibold font-inter">3</div>
 					</CardContent>
 				</Card>
 				<Card className="border-yellow-600 bg-yellow-100">
@@ -56,7 +58,7 @@ function RouteComponent() {
 						<CardTitle className="text-sm font-medium">Degraded</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-semibold font-inter">1</div>
+						<div className="text-lg font-semibold font-inter">1</div>
 					</CardContent>
 				</Card>
 				<Card className="border-red-600 bg-red-100">
@@ -64,27 +66,11 @@ function RouteComponent() {
 						<CardTitle className="text-sm font-medium">Failing</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-semibold font-inter">1</div>
+						<div className="text-lg font-semibold font-inter">1</div>
 					</CardContent>
 				</Card>
-				<Card>
-					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Inactive</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="text-2xl font-semibold font-inter">1</div>
-					</CardContent>
-				</Card>
-				<Card className=" border-purple-600 bg-purple-100">
-					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">
-							Slowest Endpoint
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="text-2xl font-semibold font-inter">530ms</div>
-					</CardContent>
-				</Card>
+				<InactiveMonitorsCard />
+				<SlowestEndpointCard />
 			</div>
 			<div>
 				<h1 className=" mt-4">Table</h1>

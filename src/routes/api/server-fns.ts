@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "database/db";
 import * as schema from "database/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import type { CheckWithMonitor } from "~/lib/definations";
 
 type MonitorSelect = typeof schema.monitorsTable.$inferSelect;
@@ -19,6 +19,40 @@ export const getAllMonitors = createServerFn().handler(async () => {
 		return monitors;
 	} catch (error) {
 		console.log("Error fetching monitors", error);
+	}
+});
+
+export const getInctiveMonitor = createServerFn().handler(async () => {
+	try {
+		const inactiveMonitor = await db
+			.select()
+			.from(schema.monitorsTable)
+			.where(eq(schema.monitorsTable.isActive, false));
+
+		return inactiveMonitor;
+	} catch (e) {
+		console.log("Error fetching inactive monitors", e);
+	}
+});
+
+export const getSlowestEndpoint = createServerFn().handler(async () => {
+	try {
+		const [slowest] = await db
+			.select({
+				response_time: schema.checksTable.response_time_ms,
+				monitor_name: schema.monitorsTable.monitor_name,
+			})
+			.from(schema.checksTable)
+			.innerJoin(
+				schema.monitorsTable,
+				eq(schema.checksTable.monitor_id, schema.monitorsTable.id),
+			)
+			.orderBy(desc(schema.checksTable.response_time_ms))
+			.limit(1);
+
+		return slowest;
+	} catch (e) {
+		console.log("Error fetching slowest endpoint", e);
 	}
 });
 

@@ -41,7 +41,7 @@ function RouteComponent() {
 						<MonitorIcon />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold font-inter">{data?.length}</div>
+						<div className="text-xl font-bold font-inter">{data?.length}</div>
 					</CardContent>
 				</Card>
 				<Card>
@@ -52,7 +52,7 @@ function RouteComponent() {
 						<StatusIcon />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold font-inter">{data?.length}</div>
+						<div className="text-xl font-bold font-inter">{data?.length}</div>
 					</CardContent>
 				</Card>
 				<div className="bg-muted/50 aspect-video rounded-xl" />
