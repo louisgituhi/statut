@@ -1,6 +1,5 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
 import { db } from "database/db";
-import { eq } from "drizzle-orm";
 import * as schema from "database/schema";
 import { json } from "@tanstack/react-start";
 
