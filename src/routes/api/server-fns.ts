@@ -22,19 +22,6 @@ export const getAllMonitors = createServerFn().handler(async () => {
 	}
 });
 
-export const getInctiveMonitor = createServerFn().handler(async () => {
-	try {
-		const inactiveMonitor = await db
-			.select()
-			.from(schema.monitorsTable)
-			.where(eq(schema.monitorsTable.isActive, false));
-
-		return inactiveMonitor;
-	} catch (e) {
-		console.log("Error fetching inactive monitors", e);
-	}
-});
-
 export const getStatusPages = createServerFn().handler(async () => {
 	try {
 		const statusPages = await db

@@ -8,11 +8,16 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createServerRootRoute } from '@tanstack/react-start/server'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardOverviewRouteImport } from './routes/dashboard/overview'
 import { Route as DashboardMonitorsRouteImport } from './routes/dashboard/monitors'
+import { ServerRoute as ApiInactiveMonitorsServerRouteImport } from './routes/api/inactive-monitors'
+
+const rootServerRouteImport = createServerRootRoute()
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
@@ -34,6 +39,12 @@ const DashboardMonitorsRoute = DashboardMonitorsRouteImport.update({
   path: '/monitors',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const ApiInactiveMonitorsServerRoute =
+  ApiInactiveMonitorsServerRouteImport.update({
+    id: '/api/inactive-monitors',
+    path: '/api/inactive-monitors',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -71,6 +82,27 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
 }
+export interface FileServerRoutesByFullPath {
+  '/api/inactive-monitors': typeof ApiInactiveMonitorsServerRoute
+}
+export interface FileServerRoutesByTo {
+  '/api/inactive-monitors': typeof ApiInactiveMonitorsServerRoute
+}
+export interface FileServerRoutesById {
+  __root__: typeof rootServerRouteImport
+  '/api/inactive-monitors': typeof ApiInactiveMonitorsServerRoute
+}
+export interface FileServerRouteTypes {
+  fileServerRoutesByFullPath: FileServerRoutesByFullPath
+  fullPaths: '/api/inactive-monitors'
+  fileServerRoutesByTo: FileServerRoutesByTo
+  to: '/api/inactive-monitors'
+  id: '__root__' | '/api/inactive-monitors'
+  fileServerRoutesById: FileServerRoutesById
+}
+export interface RootServerRouteChildren {
+  ApiInactiveMonitorsServerRoute: typeof ApiInactiveMonitorsServerRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -104,6 +136,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+declare module '@tanstack/react-start/server' {
+  interface ServerFileRoutesByPath {
+    '/api/inactive-monitors': {
+      id: '/api/inactive-monitors'
+      path: '/api/inactive-monitors'
+      fullPath: '/api/inactive-monitors'
+      preLoaderRoute: typeof ApiInactiveMonitorsServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+  }
+}
 
 interface DashboardRouteRouteChildren {
   DashboardMonitorsRoute: typeof DashboardMonitorsRoute
@@ -126,3 +169,9 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiInactiveMonitorsServerRoute: ApiInactiveMonitorsServerRoute,
+}
+export const serverRouteTree = rootServerRouteImport
+  ._addFileChildren(rootServerRouteChildren)
+  ._addFileTypes<FileServerRouteTypes>()
