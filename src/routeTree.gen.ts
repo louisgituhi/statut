@@ -15,7 +15,10 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardOverviewRouteImport } from './routes/dashboard/overview'
 import { Route as DashboardMonitorsRouteImport } from './routes/dashboard/monitors'
+import { ServerRoute as ApiSlowEndpointServerRouteImport } from './routes/api/slow-endpoint'
 import { ServerRoute as ApiInactiveMonitorsServerRouteImport } from './routes/api/inactive-monitors'
+import { ServerRoute as ApiAllStatusPagesServerRouteImport } from './routes/api/all-status-pages'
+import { ServerRoute as ApiAllMonitorsServerRouteImport } from './routes/api/all-monitors'
 
 const rootServerRouteImport = createServerRootRoute()
 
@@ -39,12 +42,27 @@ const DashboardMonitorsRoute = DashboardMonitorsRouteImport.update({
   path: '/monitors',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const ApiSlowEndpointServerRoute = ApiSlowEndpointServerRouteImport.update({
+  id: '/api/slow-endpoint',
+  path: '/api/slow-endpoint',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiInactiveMonitorsServerRoute =
   ApiInactiveMonitorsServerRouteImport.update({
     id: '/api/inactive-monitors',
     path: '/api/inactive-monitors',
     getParentRoute: () => rootServerRouteImport,
   } as any)
+const ApiAllStatusPagesServerRoute = ApiAllStatusPagesServerRouteImport.update({
+  id: '/api/all-status-pages',
+  path: '/api/all-status-pages',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiAllMonitorsServerRoute = ApiAllMonitorsServerRouteImport.update({
+  id: '/api/all-monitors',
+  path: '/api/all-monitors',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -83,25 +101,50 @@ export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
+  '/api/all-monitors': typeof ApiAllMonitorsServerRoute
+  '/api/all-status-pages': typeof ApiAllStatusPagesServerRoute
   '/api/inactive-monitors': typeof ApiInactiveMonitorsServerRoute
+  '/api/slow-endpoint': typeof ApiSlowEndpointServerRoute
 }
 export interface FileServerRoutesByTo {
+  '/api/all-monitors': typeof ApiAllMonitorsServerRoute
+  '/api/all-status-pages': typeof ApiAllStatusPagesServerRoute
   '/api/inactive-monitors': typeof ApiInactiveMonitorsServerRoute
+  '/api/slow-endpoint': typeof ApiSlowEndpointServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
+  '/api/all-monitors': typeof ApiAllMonitorsServerRoute
+  '/api/all-status-pages': typeof ApiAllStatusPagesServerRoute
   '/api/inactive-monitors': typeof ApiInactiveMonitorsServerRoute
+  '/api/slow-endpoint': typeof ApiSlowEndpointServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/inactive-monitors'
+  fullPaths:
+    | '/api/all-monitors'
+    | '/api/all-status-pages'
+    | '/api/inactive-monitors'
+    | '/api/slow-endpoint'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/inactive-monitors'
-  id: '__root__' | '/api/inactive-monitors'
+  to:
+    | '/api/all-monitors'
+    | '/api/all-status-pages'
+    | '/api/inactive-monitors'
+    | '/api/slow-endpoint'
+  id:
+    | '__root__'
+    | '/api/all-monitors'
+    | '/api/all-status-pages'
+    | '/api/inactive-monitors'
+    | '/api/slow-endpoint'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
+  ApiAllMonitorsServerRoute: typeof ApiAllMonitorsServerRoute
+  ApiAllStatusPagesServerRoute: typeof ApiAllStatusPagesServerRoute
   ApiInactiveMonitorsServerRoute: typeof ApiInactiveMonitorsServerRoute
+  ApiSlowEndpointServerRoute: typeof ApiSlowEndpointServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,11 +181,32 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/slow-endpoint': {
+      id: '/api/slow-endpoint'
+      path: '/api/slow-endpoint'
+      fullPath: '/api/slow-endpoint'
+      preLoaderRoute: typeof ApiSlowEndpointServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/inactive-monitors': {
       id: '/api/inactive-monitors'
       path: '/api/inactive-monitors'
       fullPath: '/api/inactive-monitors'
       preLoaderRoute: typeof ApiInactiveMonitorsServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/all-status-pages': {
+      id: '/api/all-status-pages'
+      path: '/api/all-status-pages'
+      fullPath: '/api/all-status-pages'
+      preLoaderRoute: typeof ApiAllStatusPagesServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/all-monitors': {
+      id: '/api/all-monitors'
+      path: '/api/all-monitors'
+      fullPath: '/api/all-monitors'
+      preLoaderRoute: typeof ApiAllMonitorsServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
   }
@@ -170,7 +234,10 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiAllMonitorsServerRoute: ApiAllMonitorsServerRoute,
+  ApiAllStatusPagesServerRoute: ApiAllStatusPagesServerRoute,
   ApiInactiveMonitorsServerRoute: ApiInactiveMonitorsServerRoute,
+  ApiSlowEndpointServerRoute: ApiSlowEndpointServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)

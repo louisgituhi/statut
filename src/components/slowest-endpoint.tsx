@@ -1,22 +1,70 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Alert02Icon } from "@hugeicons/core-free-icons";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getSlowestEndpoint } from "~/routes/api/server-fns";
 import { Card, CardHeader, CardContent, CardTitle } from "./ui/card";
+import { Skeleton } from "./ui/skeleton";
 
 const AlertIcon = () => (
 	<HugeiconsIcon icon={Alert02Icon} size={16} color="#FFEF00" />
 );
+
 export default function SlowestEndpointCard() {
-	const getSlowest = useServerFn(getSlowestEndpoint);
-	const { data } = useQuery({
+	const { data, isError, isPending, error } = useQuery({
 		queryKey: ["slowest-endpoint"],
-		queryFn: () => getSlowest(),
+		queryFn: async () => {
+			const slowEndpoint = await fetch("/api/slow-endpoint");
+			if (!slowEndpoint.ok)
+				throw new Error("Unable to fetch inactive monitors");
+			return await slowEndpoint.json();
+		},
 	});
 
-	if (!data) {
-		return null;
+	if (isError) {
+		return (
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+					<CardTitle className="text-xs font-medium">
+						Slowest endpoint
+					</CardTitle>
+					<AlertIcon />
+				</CardHeader>
+				<CardContent>
+					<p className="text-sm text-muted-foreground">
+						{error?.message ?? "Failed to load data"}
+					</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	if (isPending) {
+		return (
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+					<Skeleton className="h-4 w-24" />
+					<Skeleton className="h-4 w-4 rounded-full" />
+				</CardHeader>
+				<CardContent>
+					<Skeleton className="h-6 w-10 rounded-md" />
+				</CardContent>
+			</Card>
+		);
+	}
+
+	if (!data || data.length === 0) {
+		return (
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+					<CardTitle className="text-xs font-medium">
+						Slowest endpoint
+					</CardTitle>
+					<AlertIcon />
+				</CardHeader>
+				<CardContent>
+					<p className="text-sm text-muted-foreground">No checks available</p>
+				</CardContent>
+			</Card>
+		);
 	}
 
 	return (

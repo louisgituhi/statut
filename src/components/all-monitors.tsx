@@ -1,31 +1,31 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Alert02Icon, Layers02Icon } from "@hugeicons/core-free-icons";
+import { Tv01Icon, Alert02Icon } from "@hugeicons/core-free-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardHeader, CardContent, CardTitle } from "~/components/ui/card";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "~/components/ui/skeleton";
 
-const StatusIcon = () => (
-	<HugeiconsIcon icon={Layers02Icon} size={16} color="#2CFF05" />
+const MonitorIcon = () => (
+	<HugeiconsIcon icon={Tv01Icon} size={16} color="#2323FF" />
 );
-
 const AlertIcon = () => (
 	<HugeiconsIcon icon={Alert02Icon} size={16} color="#FFEF00" />
 );
 
-export default function StatuspageCard() {
-	const { data, isError, error, isPending } = useQuery({
-		queryKey: ["status-page"],
+export default function AllMonitorsCard() {
+	const { data, isPending, isError, error } = useQuery({
+		queryKey: ["all-monitors"],
 		queryFn: async () => {
-			const statusPage = await fetch("/api/all-status-pages");
-			if (!statusPage.ok) throw new Error("Unable to fetch inactive monitors");
-			return await statusPage.json();
+			const allMonitors = await fetch("/api/all-monitors");
+			if (!allMonitors.ok) throw new Error("Unable to fetch inactive monitors");
+			return await allMonitors.json();
 		},
 	});
+
 	if (isError) {
 		return (
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="text-xs font-medium">Status Pages</CardTitle>
+					<CardTitle className="text-xs font-medium">All Monitors</CardTitle>
 					<AlertIcon />
 				</CardHeader>
 				<CardContent>
@@ -55,23 +55,20 @@ export default function StatuspageCard() {
 		return (
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="text-xs font-medium">Status Pages</CardTitle>
+					<CardTitle className="text-xs font-medium">All Monitors</CardTitle>
 					<AlertIcon />
 				</CardHeader>
 				<CardContent>
-					<p className="text-sm text-muted-foreground">
-						No status page available
-					</p>
+					<p className="text-sm text-muted-foreground">No monitors available</p>
 				</CardContent>
 			</Card>
 		);
 	}
-
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-sm font-medium">Status Pages</CardTitle>
-				<StatusIcon />
+				<CardTitle className="text-sm font-medium">All Monitors</CardTitle>
+				<MonitorIcon />
 			</CardHeader>
 			<CardContent>
 				<div className="text-xl font-bold font-inter">{data?.length}</div>

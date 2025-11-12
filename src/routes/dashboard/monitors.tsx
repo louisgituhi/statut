@@ -16,20 +16,16 @@ import {
 } from "~/components/ui/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { getMonitorChecks } from "../api/server-fns";
 import type { CheckWithMonitor } from "~/lib/definations";
 import SlowestEndpointCard from "~/components/slowest-endpoint";
 import InactiveMonitorsCard from "~/components/inactive-monitor";
 export const Route = createFileRoute("/dashboard/monitors")({
-	loader: () => getMonitorChecks(),
 	component: RouteComponent,
 });
 
 function MonitorChecksTable() {
-	const getChecks = useServerFn(getMonitorChecks);
 	const { data } = useQuery({
 		queryKey: ["checks"],
-		queryFn: () => getChecks(),
 	});
 
 	return (
