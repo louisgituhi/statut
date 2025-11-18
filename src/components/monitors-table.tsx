@@ -43,14 +43,14 @@ const columns = [
 	columnHelper.accessor((row) => row.monitor_name, {
 		id: "Name",
 		cell: (info) => <span className="font-medium">{info.getValue()}</span>,
-		header: () => <span>Name</span>,
+		header: () => <span>Monitor name</span>,
 	}),
 	columnHelper.accessor("interval", {
 		header: () => "Interval",
 		cell: (info) => info.renderValue(),
 	}),
 	columnHelper.accessor("isActive", {
-		header: () => "Active",
+		header: () => "isActive",
 		cell: (info) =>
 			info.getValue() ? (
 				<span className="bg-green-100 text-green-600 px-2 py-0.5 text-xs font-medium rounded-none border border-green-200">
