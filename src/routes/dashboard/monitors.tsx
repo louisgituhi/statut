@@ -1,39 +1,17 @@
-import {
-	useReactTable,
-	getCoreRowModel,
-	flexRender,
-	type ColumnDef,
-} from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
-import {
-	Table,
-	TableHead,
-	TableBody,
-	TableHeader,
-	TableRow,
-	TableCell,
-} from "~/components/ui/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import type { CheckWithMonitor } from "~/lib/definations";
-import SlowestEndpointCard from "~/components/slowest-endpoint";
 import InactiveMonitorsCard from "~/components/inactive-monitor";
+import MonitorsTable from "~/components/monitors-table";
+import SlowestEndpointCard from "~/components/slowest-endpoint";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import type { CheckWithMonitor } from "~/lib/definations";
+
 export const Route = createFileRoute("/dashboard/monitors")({
 	component: RouteComponent,
 });
 
-function MonitorChecksTable() {
-	const { data } = useQuery({
-		queryKey: ["checks"],
-	});
-
-	return (
-		<div className="container mx-auto py-10">
-			<h1>Table here!!</h1>
-		</div>
-	);
-}
+function MonitorChecksTable() {}
 
 function RouteComponent() {
 	return (
@@ -69,8 +47,7 @@ function RouteComponent() {
 				<SlowestEndpointCard />
 			</div>
 			<div>
-				<h1 className=" mt-4">Table</h1>
-				<MonitorChecksTable />
+				<MonitorsTable />
 			</div>
 		</div>
 	);
